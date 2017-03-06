@@ -20,7 +20,7 @@ app.config['REPOS'] = {
 }
 
 git = sh.git
-ansible = getattr(sh, app.config['ANSIBLE_PATH'] + '/env/bin/ansible-playbook')
+#ansible = getattr(sh, app.config['ANSIBLE_PATH'] + '/env/bin/ansible-playbook')
 
 
 github = requests.Session()
