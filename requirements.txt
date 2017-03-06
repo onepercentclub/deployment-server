@@ -1,0 +1,5 @@
+Flask==0.12
+packaging==16.8
+requests==2.13.0
+sh==1.12.10
+gunicorn=19.7.0
