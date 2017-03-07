@@ -15,8 +15,8 @@ app.config['GITHUB_WEBHOOK_SECRET'] = os.environ.get('GITHUB_WEBHOOK_SECRET')
 app.config['GITHUB_ACCESS_TOKEN'] = os.environ.get('GITHUB_ACCESS_TOKEN')
 app.config['ANSIBLE_PATH'] = os.environ.get('ANSIBLE_PATH')
 app.config['REPOS'] = {
-    'onepercent/reef': 'site_frontend',
-    'onepercent/bluebottle': 'site_backend'
+    'onepercentclub/reef': 'site_frontend',
+    'onepercentclub/bluebottle': 'site_backend'
 }
 
 git = sh.git
