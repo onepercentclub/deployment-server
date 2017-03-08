@@ -30,8 +30,6 @@ github.headers.update({
 })
 
 
-
-
 @app.route('/webhook/', methods=['GET', 'POST'])
 def webhook():
     if request.method == 'POST':
@@ -73,6 +71,7 @@ def create_deployment():
         'environment': environment,
         'description': payload['head_commit']['message']
     }
+    print deployment
     response = github.post(
         payload['repository']['deployments_url'],
         json.dumps(deployment)
@@ -98,7 +97,7 @@ def deploy():
             '-e', "commit_hash={}".format(payload['deployment']['sha'])
         )
     except Exception as e:
-        exception = str(e)
+        print str(e)
         state = 'error'
 
     response = github.post(
