@@ -69,6 +69,7 @@ def create_deployment():
     deployment = {
         'ref': ref,
         'environment': environment,
+        'auto_merge': False,
         'description': payload['head_commit']['message']
     }
     print deployment
