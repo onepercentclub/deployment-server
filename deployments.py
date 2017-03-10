@@ -99,7 +99,7 @@ def deploy():
             '-e', "commit_hash={}".format(payload['deployment']['sha'])
         )
     except Exception as e:
-        print str(e)
+        print e
         state = 'error'
 
     response = github.post(
