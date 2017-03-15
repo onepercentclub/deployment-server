@@ -87,15 +87,17 @@ def deploy():
     response = github.post(
         payload['deployment']['statuses_url'], json.dumps({'state': 'pending'})
     )
+    environment = payload['deployment']['environment']
     os.chdir(app.config['ANSIBLE_PATH'])
 
     target = app.config['REPOS'][payload['repository']['full_name']]
     try:
-        git_result = git.pull()
+        git_result = git.pull(_cwd=app.config['ANSIBLE_PATH'])
         result = ansible(
             '--vault-password-file=/dev/null/', '--skip-tags=vault', '--check',
-            '-i',  'hosts/linode', '-l', 'development', '{}.yml'.format(target),
-            '-e', "commit_hash={}".format(payload['deployment']['sha'])
+            '-i',  'hosts/linode', '-l', environment, '{}.yml'.format(target),
+            '-e', "commit_hash={}".format(payload['deployment']['sha']),
+            _cwd=app.config['ANSIBLE_PATH']
         )
     except Exception as e:
         print e
