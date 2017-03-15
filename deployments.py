@@ -76,7 +76,6 @@ def create_deployment():
         payload['repository']['deployments_url'],
         json.dumps(deployment)
     )
-    print response.content
 
     response.raise_for_status()
 
