@@ -60,7 +60,7 @@ def create_deployment():
         environment = 'staging'
     elif ref.startswith('refs/heads/release/'):
         environment = 'testing'
-    elif ref == 'refs/heads/develop':
+    elif ref == 'refs/heads/develop' or True:
         environment = 'development'
 
     if not environment:
