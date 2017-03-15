@@ -13,14 +13,13 @@ import requests
 app = Flask('deployment_server')
 app.config['GITHUB_WEBHOOK_SECRET'] = os.environ.get('GITHUB_WEBHOOK_SECRET')
 app.config['GITHUB_ACCESS_TOKEN'] = os.environ.get('GITHUB_ACCESS_TOKEN')
-app.config['ANSIBLE_PATH'] = os.environ.get('ANSIBLE_PATH')
 app.config['REPOS'] = {
     'onepercentclub/reef': 'site_frontend',
     'onepercentclub/bluebottle': 'site_backend'
 }
 
 git = sh.git
-ansible = getattr(sh, app.config['ANSIBLE_PATH'] + '/env/bin/ansible-playbook')
+ansible = getattr(sh, 'ansible-playbook')
 
 
 github = requests.Session()
