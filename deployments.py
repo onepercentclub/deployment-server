@@ -72,7 +72,6 @@ def create_deployment():
         'auto_merge': False,
         'description': payload['head_commit']['message']
     }
-    print deployment
     response = github.post(
         payload['repository']['deployments_url'],
         json.dumps(deployment)
