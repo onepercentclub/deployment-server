@@ -99,7 +99,7 @@ def deploy():
             _cwd=app.config['ANSIBLE_PATH']
         )
     except Exception as e:
-        print e
+        print e.stdout
         state = 'error'
 
     response = github.post(
