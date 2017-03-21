@@ -56,11 +56,13 @@ def create_deployment():
     ref = payload['ref']
 
     environment = None
-    if ref == 'refs/heads/master':
+    if ref == 'refs/heads/master' and False:
         environment = 'staging'
-    elif ref.startswith('refs/heads/release/'):
+    elif ref.startswith('refs/heads/release/') and False:
         environment = 'testing'
-    elif ref == 'refs/heads/develop' or True:
+    elif ref == 'refs/heads/develop' and False:
+        environment = 'development'
+    elif ref == 'refs/heads/test/temp':
         environment = 'development'
 
     if not environment:
