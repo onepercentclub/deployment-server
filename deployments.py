@@ -84,7 +84,11 @@ def deploy():
     payload = request.json
     state = 'success'
     response = github.post(
-        payload['deployment']['statuses_url'], json.dumps({'state': 'pending'})
+        payload['deployment']['statuses_url'],
+        json.dumps({
+            'state': 'pending',
+            'description': 'Started deploy: {}'.format(payload['deployment']['description'])
+        })
     )
     environment = payload['deployment']['environment']
     os.chdir(app.config['ANSIBLE_PATH'])
@@ -99,7 +103,6 @@ def deploy():
             _cwd=app.config['ANSIBLE_PATH']
         )
     except Exception as e:
-        print e.stdout
         state = 'error'
 
     response = github.post(
