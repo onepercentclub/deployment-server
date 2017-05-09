@@ -31,10 +31,10 @@ github.headers.update({
 
 
 @app.route('/deployment/<user>/<repo>/<id>')
-def deployment(repo, id):
+def deployment(user, repo, id):
     response = github.get(
         'https://api.github.com/repos/{user}/{repo}/deployments/{id}/statuses'.format(
-            repo=repo, id=id
+            user=user, repo=repo, id=id
         )
     )
     return response.content
