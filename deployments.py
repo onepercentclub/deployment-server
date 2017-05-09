@@ -104,13 +104,12 @@ def deploy():
             '-e', "commit_hash={}".format(payload['deployment']['sha']),
             _cwd=app.config['ANSIBLE_PATH']
         )
-        description = str(result)
-        print description
+
     except Exception as e:
         description = [line for line in e.stdout.splitlines() if line.startswith('fatal:')][0]
-        print description
         state = 'error'
 
+    print state, description
     response = github.post(
         payload['deployment']['statuses_url'], json.dumps({'state': state, description: description})
     )
