@@ -85,6 +85,7 @@ def create_deployment():
 def deploy():
     payload = request.json
     state = 'success'
+    print payload
     response = github.post(
         payload['deployment']['statuses_url'],
         json.dumps({
@@ -110,7 +111,7 @@ def deploy():
         state = 'error'
 
     response = github.post(
-        payload['deployment']['statuses_url'], json.dumps({'state': state, description: description})
+        payload['deployment']['statuses_url'],
+        json.dumps({'state': state, 'description': description})
     )
     response.raise_for_status()
-    print response.content
