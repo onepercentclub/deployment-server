@@ -105,6 +105,7 @@ def deploy():
             _cwd=app.config['ANSIBLE_PATH']
         )
         description = str(result)
+        print description
     except Exception as e:
         description = [line for line in e.stdout.splitlines() if line.startswith('fatal:')][0]
         print description
