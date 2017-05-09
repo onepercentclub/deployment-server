@@ -104,6 +104,7 @@ def deploy():
             '-e', "commit_hash={}".format(payload['deployment']['sha']),
             _cwd=app.config['ANSIBLE_PATH']
         )
+        description = str(result)
     except Exception as e:
         description = [line for line in e.stdout.splitlines() if line.startswith('fatal:')][0]
         print description
