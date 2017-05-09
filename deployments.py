@@ -30,6 +30,15 @@ github.headers.update({
 })
 
 
+@app.route('deployment/<repo>/<id>')
+def deployment(repo, id):
+    response = github.get(
+        'https://api.github.com/repos/{repo}/deployments/{id}/statuses'.format(
+            repo=repo, id=id
+        )
+    )
+    return response.content
+
 @app.route('/webhook/', methods=['GET', 'POST'])
 def webhook():
     if request.method == 'POST':
@@ -40,7 +49,6 @@ def webhook():
         if not 'sha1={}'.format(mac.hexdigest()) == signature:
             return 'Invalid signature', 403
 
-        print event
         if event == 'ping':
             return json.dumps({'msg': 'hi'})
         if event == 'deployment':
@@ -85,7 +93,6 @@ def create_deployment():
 def deploy():
     payload = request.json
     state = 'success'
-    print payload
     response = github.post(
         payload['deployment']['statuses_url'],
         json.dumps({
@@ -110,8 +117,14 @@ def deploy():
         description = [line for line in e.stdout.splitlines() if line.startswith('fatal:')][0]
         state = 'error'
 
+    target_url = url_for(
+        'deployment',
+        repo=payload['repository']['full_name'],
+        id=payload['deployment']['id']
+    )
     response = github.post(
         payload['deployment']['statuses_url'],
-        json.dumps({'state': state, 'description': description})
+        json.dumps({'state': state, 'description': description, 'target_url': target_url})
     )
     response.raise_for_status()
+    print response
