@@ -143,7 +143,7 @@ def deploy():
 
     target_url = url_for(
         'deployment',
-        user=payload['repository']['owner'],
+        user=payload['repository']['full_name'].split('/')[0],
         repo=payload['repository']['name'],
         id=payload['deployment']['id'],
         _external=True
