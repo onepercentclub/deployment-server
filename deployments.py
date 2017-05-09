@@ -15,7 +15,7 @@ app.config['GITHUB_WEBHOOK_SECRET'] = os.environ.get('GITHUB_WEBHOOK_SECRET')
 app.config['GITHUB_ACCESS_TOKEN'] = os.environ.get('GITHUB_ACCESS_TOKEN')
 app.config['ANSIBLE_PATH'] = os.environ.get('ANSIBLE_PATH')
 app.config['REPOS'] = {
-    'onepercentclub/reef': 'site_frontend',
+    'eodolphi/test-repo': 'site_frontend',
     'onepercentclub/bluebottle': 'site_backend'
 }
 
@@ -56,11 +56,11 @@ def create_deployment():
     ref = payload['ref']
 
     environment = None
-    if ref == 'refs/heads/master' and False:
+    if ref == 'refs/heads/master':
         environment = 'staging'
-    elif ref.startswith('refs/heads/release/') and False:
+    elif ref.startswith('refs/heads/release/'):
         environment = 'testing'
-    elif ref == 'refs/heads/develop' and False:
+    elif ref == 'refs/heads/develop':
         environment = 'development'
     elif ref == 'refs/heads/test/temp':
         environment = 'development'
