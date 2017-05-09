@@ -120,7 +120,8 @@ def deploy():
     target_url = url_for(
         'deployment',
         repo=payload['repository']['full_name'],
-        id=payload['deployment']['id']
+        id=payload['deployment']['id'],
+        _external=True
     )
     response = github.post(
         payload['deployment']['statuses_url'],
