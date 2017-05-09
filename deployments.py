@@ -127,11 +127,11 @@ def deploy():
         )
 
         description = 'Deployment succeeded'
-        log = str(result)
+        log = str(result.stdout)
     except Exception as e:
         description = 'Deploy failed'
         state = 'error'
-        log = str(e)
+        log = str(e.stdout)
 
     redis_store.set(
         'deployment-{}-{}'.format(
