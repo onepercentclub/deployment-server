@@ -18,6 +18,10 @@ app.config['REPOS'] = {
     'eodolphi/test-repo': 'site_frontend',
     'onepercentclub/bluebottle': 'site_backend'
 }
+app.config['REDIS_URL'] = os.environ.get('REDIS_URL')
+
+redis_store = FlaskRedis(app)
+
 
 git = sh.git
 ansible = getattr(sh, 'ansible-playbook')
@@ -35,6 +39,13 @@ def deployment(user, repo, id):
     response = github.get(
         'https://api.github.com/repos/{user}/{repo}/deployments/{id}/statuses'.format(
             user=user, repo=repo, id=id
+        )
+    )
+    print response
+
+    return redis_store.get(
+        'deployment-{}/{}-{}'.format(
+            user, repo, id
         )
     )
     return response.content
@@ -113,10 +124,18 @@ def deploy():
             _cwd=app.config['ANSIBLE_PATH']
         )
 
+        description = 'Deployment succeeded'
     except Exception as e:
-        description = [line for line in e.stdout.splitlines() if line.startswith('fatal:')][0]
+        description = 'Deploy failed'
         state = 'error'
 
+    redis_store.set(
+        'deployment-{}-{}'.format(
+            payload['repository']['full_name'],
+            payload['deployment']['id']
+        ),
+        str(result)
+    )
     target_url = url_for(
         'deployment',
         user=payload['repository']['owner']['name'],
