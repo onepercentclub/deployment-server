@@ -126,5 +126,8 @@ def deploy():
         payload['deployment']['statuses_url'],
         json.dumps({'state': state, 'description': description, 'target_url': target_url})
     )
+    print response.content
     response.raise_for_status()
-    print response
+
+    response.raise_for_status()
+
