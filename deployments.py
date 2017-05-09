@@ -127,17 +127,20 @@ def deploy():
         )
 
         description = 'Deployment succeeded'
+        log = str(result)
     except Exception as e:
         description = 'Deploy failed'
         state = 'error'
+        log = str(e)
 
     redis_store.set(
         'deployment-{}-{}'.format(
             payload['repository']['full_name'],
             payload['deployment']['id']
         ),
-        str(result)
+        str(log)
     )
+
     target_url = url_for(
         'deployment',
         user=payload['repository']['owner']['name'],
