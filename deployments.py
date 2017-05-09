@@ -7,8 +7,10 @@ import os
 import subprocess
 
 from flask import Flask, request, url_for
+from flask_redis import FlaskRedis
 import sh
 import requests
+
 
 app = Flask('deployment_server')
 app.config['GITHUB_WEBHOOK_SECRET'] = os.environ.get('GITHUB_WEBHOOK_SECRET')
