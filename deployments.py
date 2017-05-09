@@ -109,8 +109,8 @@ def deploy():
         description = [line for line in e.stdout.splitlines() if line.startswith('fatal:')][0]
         state = 'error'
 
-    print state, description
     response = github.post(
         payload['deployment']['statuses_url'], json.dumps({'state': state, description: description})
     )
     response.raise_for_status()
+    print response
