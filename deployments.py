@@ -30,10 +30,10 @@ github.headers.update({
 })
 
 
-@app.route('/deployment/<repo>/<id>')
+@app.route('/deployment/<user>/<repo>/<id>')
 def deployment(repo, id):
     response = github.get(
-        'https://api.github.com/repos/{repo}/deployments/{id}/statuses'.format(
+        'https://api.github.com/repos/{user}/{repo}/deployments/{id}/statuses'.format(
             repo=repo, id=id
         )
     )
@@ -119,7 +119,8 @@ def deploy():
 
     target_url = url_for(
         'deployment',
-        repo=payload['repository']['full_name'],
+        user=payload['repository']['owner']['name'],
+        repo=payload['repository']['name'],
         id=payload['deployment']['id'],
         _external=True
     )
