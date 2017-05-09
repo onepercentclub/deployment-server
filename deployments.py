@@ -105,6 +105,7 @@ def deploy():
             _cwd=app.config['ANSIBLE_PATH']
         )
         description = str(result)
+        print description
     except Exception as e:
         description = [line for line in e.stdout.splitlines() if line.startswith('fatal:')][0]
         print description
@@ -113,5 +114,4 @@ def deploy():
     response = github.post(
         payload['deployment']['statuses_url'], json.dumps({'state': state, description: description})
     )
-    print response.content
     response.raise_for_status()
