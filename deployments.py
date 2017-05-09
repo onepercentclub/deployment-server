@@ -99,7 +99,7 @@ def deploy():
     try:
         git_result = git.pull(_cwd=app.config['ANSIBLE_PATH'])
         result = ansible(
-            '--vault-password-file=/dev/null/', '--skip-tags=vault', '--check',
+            '--vault-password-file=/dev/null/', '--skip-tags=vault',
             '-i',  'hosts/linode', '-l', environment, '{}.yml'.format(target),
             '-e', "commit_hash={}".format(payload['deployment']['sha']),
             _cwd=app.config['ANSIBLE_PATH']
