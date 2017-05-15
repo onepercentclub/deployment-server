@@ -6,6 +6,7 @@ import time
 import os
 import subprocess
 
+from celery import Celery
 from flask import Flask, request, url_for
 from flask_redis import FlaskRedis
 import sh
@@ -22,6 +23,8 @@ app.config['REPOS'] = {
     'onepercentclub/bluebottle': 'site_backend'
 }
 app.config['REDIS_URL'] = os.environ['REDIS_URL']
+app.config['CELERY_BROKER_URL'] = os.environ['REDIS_URL']
+app.config['CELERY_RESULT_BACKEND1'] = os.environ['REDIS_URL']
 
 redis_store = FlaskRedis(app)
 
@@ -35,6 +38,25 @@ github.headers.update({
     'Content-Type': 'application/json',
     'Authorization': 'token {}'.format(app.config['GITHUB_ACCESS_TOKEN'])
 })
+
+
+def make_celery(app):
+    celery = Celery(app.import_name, backend=app.config['CELERY_RESULT_BACKEND'],
+                    broker=app.config['CELERY_BROKER_URL'])
+    celery.conf.update(app.config)
+
+    TaskBase = celery.Task
+
+    class ContextTask(TaskBase):
+        abstract = True
+        def __call__(self, *args, **kwargs):
+            with app.app_context():
+                return TaskBase.__call__(self, *args, **kwargs)
+    celery.Task = ContextTask
+    return celery
+
+
+celery = make_celery(app)
 
 
 @app.route('/deployment/<user>/<repo>/<id>')
@@ -58,6 +80,7 @@ def webhook():
     if request.method == 'POST':
         event = request.headers['X-GitHub-Event']
         signature = request.headers['X-Hub-Signature']
+        payload = request.json
 
         mac = hmac.new(app.config['GITHUB_WEBHOOK_SECRET'], msg=request.data, digestmod=hashlib.sha1)
         if not 'sha1={}'.format(mac.hexdigest()) == signature:
@@ -66,17 +89,17 @@ def webhook():
         if event == 'ping':
             return json.dumps({'msg': 'hi'})
         if event == 'deployment':
-            deploy()
+            deploy(payload)
         if event == 'deployment_status':
-            send_slack_message()
+            send_slack_message(payload)
         if event == 'push':
-            create_deployment()
+            create_deployment(payload)
 
         return '', 201
 
 
-def create_deployment():
-    payload = request.json
+@celery.task()
+def create_deployment(payload):
     ref = payload['ref']
 
     environment = None
@@ -106,8 +129,8 @@ def create_deployment():
     response.raise_for_status()
 
 
-def deploy():
-    payload = request.json
+@celery.task()
+def deploy(payload):
     state = 'success'
     response = github.post(
         payload['deployment']['statuses_url'],
@@ -158,8 +181,8 @@ def deploy():
     response.raise_for_status()
 
 
-def send_slack_message():
-    payload = request.json
+@celery.task()
+def send_slack_message(payload):
     state = payload['deployment_status']['state']
     description = payload['deployment_status']['description']
     environment = payload['deployment']['environment']
