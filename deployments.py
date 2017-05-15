@@ -24,7 +24,7 @@ app.config['REPOS'] = {
 }
 app.config['REDIS_URL'] = os.environ['REDIS_URL']
 app.config['CELERY_BROKER_URL'] = os.environ['REDIS_URL']
-app.config['CELERY_RESULT_BACKEND1'] = os.environ['REDIS_URL']
+app.config['CELERY_RESULT_BACKEND'] = os.environ['REDIS_URL']
 
 redis_store = FlaskRedis(app)
 
