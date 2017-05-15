@@ -83,8 +83,6 @@ def create_deployment():
         environment = 'testing'
     elif ref == 'refs/heads/develop':
         environment = 'development'
-    elif ref == 'refs/heads/test/temp':
-        environment = 'development'
 
     if not environment:
         return
