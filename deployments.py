@@ -152,7 +152,7 @@ def deploy():
     )
     response = github.post(
         payload['deployment']['statuses_url'],
-        json.dumps({'state': state, 'description': description[-139], 'target_url': target_url})
+        json.dumps({'state': state, 'description': description[-139:], 'target_url': target_url})
     )
     response.raise_for_status()
 
