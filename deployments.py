@@ -18,6 +18,7 @@ app.config['GITHUB_ACCESS_TOKEN'] = os.environ['GITHUB_ACCESS_TOKEN']
 app.config['ANSIBLE_PATH'] = os.environ['ANSIBLE_PATH']
 app.config['REPOS'] = {
     'eodolphi/test-repo': 'site_frontend',
+    'onepercent/reef': 'site_frontend',
     'onepercentclub/bluebottle': 'site_backend'
 }
 app.config['REDIS_URL'] = os.environ['REDIS_URL']
@@ -175,8 +176,8 @@ def send_slack_message():
     data = {
         'channel': '#test-deploys',
         'attachments': [{
-            "title": deployment,
-            "text": 'Deploying {} to {}'.format(description, environment),
+            "title": 'Deploying {} to {}'.format(deployment, environment),
+            "text": description
             "color": color,
             "title_link": url_for(
                 'deployment',
@@ -194,5 +195,4 @@ def send_slack_message():
         headers={'Content-Type': 'application/json'}
     )
 
-    print response
     response.raise_for_status()
