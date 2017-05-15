@@ -8,7 +8,6 @@ import subprocess
 
 from flask import Flask, request, url_for
 from flask_redis import FlaskRedis
-from slacklcient import SlackClient
 import sh
 import requests
 
@@ -27,7 +26,7 @@ redis_store = FlaskRedis(app)
 
 
 git = sh.git
-slack_webhook = SlackClient(os.environ['SLACK_WEBHOOK'])
+slack_webhook = os.environ['SLACK_WEBHOOK']
 
 github = requests.Session()
 github.headers.update({
@@ -164,7 +163,13 @@ def send_slack_message():
     environment = payload['deployment']['environment']
     deployment = payload['deployment']['description']
 
-    color = 'danger' if state == 'error' else 'success'
+    color_map = {
+        'pending': 'warning',
+        'error': 'danger',
+        'success': 'good'
+    }
+
+    color = color_map[state]
 
     data = {
         'channel': '#test-deploys',
