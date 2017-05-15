@@ -26,6 +26,7 @@ redis_store = FlaskRedis(app)
 
 
 git = sh.git
+ansible = getattr(sh, 'ansible-playbook')
 slack_webhook = os.environ['SLACK_WEBHOOK']
 
 github = requests.Session()
