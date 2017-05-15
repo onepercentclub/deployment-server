@@ -129,7 +129,7 @@ def deploy():
 
         description = 'Deployment succeeded'
         log = str(result.stdout)
-    except Exception as e:
+    except sh.ErrorReturnCode as e:
         description = 'Deploy failed'
         state = 'error'
         log = str(e.stdout)
