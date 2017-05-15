@@ -177,7 +177,7 @@ def send_slack_message():
         'channel': '#test-deploys',
         'attachments': [{
             "title": 'Deploying {} to {}'.format(deployment, environment),
-            "text": description
+            "text": description,
             "color": color,
             "title_link": url_for(
                 'deployment',
