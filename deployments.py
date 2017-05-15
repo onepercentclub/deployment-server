@@ -89,11 +89,11 @@ def webhook():
         if event == 'ping':
             return json.dumps({'msg': 'hi'})
         if event == 'deployment':
-            deploy(payload)
+            deploy.delay(payload)
         if event == 'deployment_status':
-            send_slack_message(payload)
+            send_slack_message.delay(payload)
         if event == 'push':
-            create_deployment(payload)
+            create_deployment.delay(payload)
 
         return '', 201
 
