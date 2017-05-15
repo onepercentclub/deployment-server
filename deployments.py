@@ -8,26 +8,27 @@ import subprocess
 
 from flask import Flask, request, url_for
 from flask_redis import FlaskRedis
+from slacklcient import SlackClient
 import sh
 import requests
 
 
 app = Flask('deployment_server')
-app.config['GITHUB_WEBHOOK_SECRET'] = os.environ.get('GITHUB_WEBHOOK_SECRET')
-app.config['GITHUB_ACCESS_TOKEN'] = os.environ.get('GITHUB_ACCESS_TOKEN')
-app.config['ANSIBLE_PATH'] = os.environ.get('ANSIBLE_PATH')
+app.config['GITHUB_WEBHOOK_SECRET'] = os.environ['GITHUB_WEBHOOK_SECRET']
+app.config['GITHUB_ACCESS_TOKEN'] = os.environ['GITHUB_ACCESS_TOKEN']
+app.config['ANSIBLE_PATH'] = os.environ['ANSIBLE_PATH']
 app.config['REPOS'] = {
     'eodolphi/test-repo': 'site_frontend',
     'onepercentclub/bluebottle': 'site_backend'
 }
-app.config['REDIS_URL'] = os.environ.get('REDIS_URL')
+app.config['REDIS_URL'] = os.environ['REDIS_URL']
 
 redis_store = FlaskRedis(app)
 
 
 git = sh.git
 ansible = getattr(sh, 'ansible-playbook')
-
+slack = SlackClient(os.environ['SLACK_API_TOKEN'])
 
 github = requests.Session()
 github.headers.update({
@@ -66,6 +67,8 @@ def webhook():
             return json.dumps({'msg': 'hi'})
         if event == 'deployment':
             deploy()
+        if event == 'deployment_status':
+            send_slack_message()
         if event == 'push':
             create_deployment()
 
@@ -150,8 +153,32 @@ def deploy():
         payload['deployment']['statuses_url'],
         json.dumps({'state': state, 'description': description[-139:-1], 'target_url': target_url})
     )
-    print response.content
     response.raise_for_status()
 
-    response.raise_for_status()
 
+def send_slack_message():
+    payload = request.json
+    state = payload['deployment_status']['state']
+    description = payload['deployment_status']['description']
+    environment = payload['deployment']['environment']
+    deployment = payload['deployment']['description']
+
+    color = 'danger' if state == 'error' else 'success'
+
+    slack.api_call(
+        'chat.postmessage',
+        channel='#test-deploys',
+        text="Deployment",
+        attachments=[{
+            "title": deployment,
+            "text": description,
+            "color": color,
+            "title_link": url_for(
+                'deployment',
+                user=payload['repository']['full_name'].split('/')[0],
+                repo=payload['repository']['name'],
+                id=payload['deployment']['id'],
+                _external=True
+            )
+        }]
+    )
