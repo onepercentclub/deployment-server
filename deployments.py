@@ -25,6 +25,7 @@ app.config['REPOS'] = {
 app.config['REDIS_URL'] = os.environ['REDIS_URL']
 app.config['CELERY_BROKER_URL'] = os.environ['REDIS_URL']
 app.config['CELERY_RESULT_BACKEND'] = os.environ['REDIS_URL']
+app.config['SERVER_NAME'] = 'deployments.dokku.onepercentclub.com'
 
 redis_store = FlaskRedis(app)
 
