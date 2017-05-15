@@ -127,7 +127,7 @@ def create_deployment(payload):
         json.dumps(deployment)
     )
 
-    print response
+    print response.content
     response.raise_for_status()
 
 
