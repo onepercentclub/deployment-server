@@ -18,7 +18,7 @@ app.config['GITHUB_ACCESS_TOKEN'] = os.environ['GITHUB_ACCESS_TOKEN']
 app.config['ANSIBLE_PATH'] = os.environ['ANSIBLE_PATH']
 app.config['REPOS'] = {
     'eodolphi/test-repo': 'site_frontend',
-    'onepercent/reef': 'site_frontend',
+    'onepercentclub/reef': 'site_frontend',
     'onepercentclub/bluebottle': 'site_backend'
 }
 app.config['REDIS_URL'] = os.environ['REDIS_URL']
