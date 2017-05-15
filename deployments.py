@@ -27,8 +27,7 @@ redis_store = FlaskRedis(app)
 
 
 git = sh.git
-ansible = getattr(sh, 'ansible-playbook')
-slack = SlackClient(os.environ['SLACK_API_TOKEN'])
+slack_webhook = SlackClient(os.environ['SLACK_WEBHOOK'])
 
 github = requests.Session()
 github.headers.update({
@@ -167,11 +166,10 @@ def send_slack_message():
 
     color = 'danger' if state == 'error' else 'success'
 
-    slack.api_call(
-        'chat.postmessage',
-        channel='#test-deploys',
-        text="Deployment",
-        attachments=[{
+    data = {
+        'channel': '#test-deploys',
+        'text': "Deployment",
+        'attachments': [{
             "title": deployment,
             "text": description,
             "color": color,
@@ -183,4 +181,13 @@ def send_slack_message():
                 _external=True
             )
         }]
+    }
+
+    response = requests.post(
+        slack_webhook,
+        json.dumps(data),
+        headers={'Content-Type': 'application/json'}
     )
+
+    print response
+    response.raise_for_status()
