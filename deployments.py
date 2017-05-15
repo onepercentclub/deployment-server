@@ -43,14 +43,14 @@ def deployment(user, repo, id):
             user=user, repo=repo, id=id
         )
     )
-    print response
 
     return redis_store.get(
         'deployment-{}/{}-{}'.format(
             user, repo, id
         )
     )
-    return response.content
+    return response.content, 200
+
 
 @app.route('/webhook/', methods=['GET', 'POST'])
 def webhook():
