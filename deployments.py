@@ -164,6 +164,8 @@ def deploy(payload):
                 commit_hash=payload['deployment']['sha'], **app.config['JIRIT']
             )
 
+        print args
+
         result = ansible(
             '--vault-password-file=/dev/null/', '--skip-tags=vault',
             '-i',  'hosts/linode', '-l', environment, '{}.yml'.format(target),
