@@ -163,6 +163,7 @@ def deploy(payload):
             "git_org={git_org} commit_hash={commit_hash}").format(
                 commit_hash=payload['deployment']['sha'], **app.config['JIRIT']
             )
+        print args
 
         result = ansible(
             '--vault-password-file=/dev/null/', '--skip-tags=vault',
