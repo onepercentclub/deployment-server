@@ -158,13 +158,11 @@ def deploy(payload):
     try:
         git_result = git.pull(_cwd=app.config['ANSIBLE_PATH'])
         args = (
-            "jira_email={jira_email} jira_password={jira_password} jira_url={jira_url}"
-            "jira_id={jira_id} git_username={git_username} git_password={{git_password}}"
+            "jira_email={jira_email} jira_password={jira_password} jira_url={jira_url} "
+            "jira_id={jira_id} git_username={git_username} git_password={{git_password}} "
             "git_org={git_org}").format(
                 commit_hash=payload['deployment']['sha'], **app.config['JIRIT']
             )
-
-        print args
 
         result = ansible(
             '--vault-password-file=/dev/null/', '--skip-tags=vault',
