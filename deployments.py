@@ -157,15 +157,17 @@ def deploy(payload):
     target = app.config['REPOS'][payload['repository']['full_name']]
     try:
         git_result = git.pull(_cwd=app.config['ANSIBLE_PATH'])
-        args = ("jira_email={jira_email} jira_password={jira_password} jira_url={jira_url}"
-               "jira_id={jira_id} git_username={git_username} git_password={{git_password}}"
-               "git_org={git_org}").format(**app.config['JIRIT'])
+        args = (
+            "jira_email={jira_email} jira_password={jira_password} jira_url={jira_url}"
+            "jira_id={jira_id} git_username={git_username} git_password={{git_password}}"
+            "git_org={git_org}").format(
+                commit_hash=payload['deployment']['sha'], **app.config['JIRIT']
+            )
 
         result = ansible(
             '--vault-password-file=/dev/null/', '--skip-tags=vault',
             '-i',  'hosts/linode', '-l', environment, '{}.yml'.format(target),
-            '-e', args, '-e', "commit_hash={}".format(payload['deployment']['sha']),
-            _cwd=app.config['ANSIBLE_PATH']
+            '-e', args, _cwd=app.config['ANSIBLE_PATH']
         )
 
         description = 'Deployment succeeded'
