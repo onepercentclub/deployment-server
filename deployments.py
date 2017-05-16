@@ -141,6 +141,8 @@ def deploy(payload):
             'description': 'Started deploy'
         })
     )
+    response.raise_for_status()
+
     environment = payload['deployment']['environment']
     os.chdir(app.config['ANSIBLE_PATH'])
 
