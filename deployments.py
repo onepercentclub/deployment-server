@@ -26,7 +26,15 @@ app.config['REDIS_URL'] = os.environ['REDIS_URL']
 app.config['CELERY_BROKER_URL'] = os.environ['REDIS_URL']
 app.config['CELERY_RESULT_BACKEND'] = os.environ['REDIS_URL']
 app.config['SERVER_NAME'] = 'deployments.dokku.onepercentclub.com'
-
+app.config['JIRIT'] = {
+    'jira_email': os.environ['JIRA_EMAIL'],
+    'jira_password': os.environ['JIRA_PASSWORD'],
+    'jira_url': os.environ['JIRA_URL'],
+    'jira_id': os.environ['JIRA_ID'],
+    'git_username': os.environ['GIT_USERNAME'],
+    'git_password': os.environ['GIT_PASSWORD'],
+    'git_org': os.environ['GIT_ORG'],
+}
 redis_store = FlaskRedis(app)
 
 
@@ -149,10 +157,14 @@ def deploy(payload):
     target = app.config['REPOS'][payload['repository']['full_name']]
     try:
         git_result = git.pull(_cwd=app.config['ANSIBLE_PATH'])
+        args = ("jira_email={jira_email} jira_password={jira_password} jira_url={jira_url}"
+               "jira_id={jira_id} git_username={git_username} git_password={{git_password}}"
+               "git_org={git_org}").format(**app.config['JIRIT'])
+
         result = ansible(
             '--vault-password-file=/dev/null/', '--skip-tags=vault',
             '-i',  'hosts/linode', '-l', environment, '{}.yml'.format(target),
-            '-e', "commit_hash={}".format(payload['deployment']['sha']),
+            '-e', args, '-e', "commit_hash={}".format(payload['deployment']['sha']),
             _cwd=app.config['ANSIBLE_PATH']
         )
 
