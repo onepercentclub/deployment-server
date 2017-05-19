@@ -128,6 +128,7 @@ def create_deployment(payload):
         'ref': ref,
         'environment': environment,
         'auto_merge': False,
+        'required_contexts': [],
         'description': payload['head_commit']['message']
     }
     response = github.post(
@@ -163,7 +164,6 @@ def deploy(payload):
             "git_org={git_org} commit_hash={commit_hash}").format(
                 commit_hash=payload['deployment']['sha'], **app.config['JIRIT']
             )
-        print args
 
         result = ansible(
             '--vault-password-file=/dev/null/', '--skip-tags=vault',
