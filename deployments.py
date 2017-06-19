@@ -118,8 +118,6 @@ def create_deployment(payload):
         environment = 'testing'
     elif ref == 'refs/heads/develop':
         environment = 'development'
-    elif ref == 'refs/heads/test/temp':
-        environment = 'development'
 
     if not environment:
         return
