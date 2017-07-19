@@ -169,10 +169,10 @@ def deploy(payload):
             '-e', args, _cwd=app.config['ANSIBLE_PATH']
         )
 
-        description = 'Deployment succeeded @anne @daniel '
+        description = 'Deployment succeeded'
         log = str(result.stdout)
     except sh.ErrorReturnCode as e:
-        description = 'Deploy failed @anne @daniel'
+        description = 'Deploy failed'
         state = 'error'
         log = str(e.stdout)
 
