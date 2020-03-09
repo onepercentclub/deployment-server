@@ -149,6 +149,7 @@ def deploy(payload):
         })
     )
     response.raise_for_status()
+    print 'deploying'
 
     environment = payload['deployment']['environment']
     os.chdir(app.config['ANSIBLE_PATH'])
@@ -175,7 +176,6 @@ def deploy(payload):
         description = 'Deploy failed'
         state = 'error'
         log = str(e.stdout)
-        print log, e
 
     redis_store.set(
         'deployment-{}-{}'.format(
