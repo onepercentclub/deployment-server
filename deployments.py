@@ -166,7 +166,7 @@ def deploy(payload):
         result = ansible(
             '--vault-password-file=/dev/null/', '--skip-tags=vault',
             '-i',  'hosts/linode', '-l', environment, '{}.yml'.format(target),
-            '-e', args, _cwd=app.config['ANSIBLE_PATH']
+            '-e', '-vvv', args, _cwd=app.config['ANSIBLE_PATH']
         )
 
         description = 'Deployment succeeded'
