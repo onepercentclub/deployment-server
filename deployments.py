@@ -166,6 +166,7 @@ def deploy(payload):
             '-i',  'hosts/linode', '-l', environment, '-vvv', '{}.yml'.format(target),
             '-e', args, _cwd=app.config['ANSIBLE_PATH']
         )
+        print result, '!!!!'
 
         description = 'Deployment succeeded'
         log = str(result.stdout)
