@@ -99,8 +99,6 @@ def webhook():
             return json.dumps({'msg': 'hi'})
         if event == 'deployment':
             deploy.delay(payload)
-        if event == 'deployment_status':
-            send_slack_message.delay(payload)
         if event == 'push':
             create_deployment.delay(payload)
 
