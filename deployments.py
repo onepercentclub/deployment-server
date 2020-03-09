@@ -175,6 +175,7 @@ def deploy(payload):
         description = 'Deploy failed'
         state = 'error'
         log = str(e.stdout)
+        print log, e
 
     redis_store.set(
         'deployment-{}-{}'.format(
