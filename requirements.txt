@@ -1,7 +1,7 @@
 Flask==0.12
 flask-redis==0.3.0
 packaging==16.8
-requests==2.13.0
+requests==2.20.0
 sh==1.12.10
 gunicorn==19.7.0
 ansible==2.2.1
