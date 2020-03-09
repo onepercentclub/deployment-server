@@ -147,7 +147,6 @@ def deploy(payload):
         })
     )
     response.raise_for_status()
-    print 'deploying'
 
     environment = payload['deployment']['environment']
     os.chdir(app.config['ANSIBLE_PATH'])
@@ -171,6 +170,7 @@ def deploy(payload):
         description = 'Deployment succeeded'
         log = str(result.stdout)
     except sh.ErrorReturnCode as e:
+        print e, e.stdout
         description = 'Deploy failed'
         state = 'error'
         log = str(e.stdout)
