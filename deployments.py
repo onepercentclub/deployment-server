@@ -114,8 +114,8 @@ def create_deployment(payload):
         environment = 'staging'
     elif ref.startswith('refs/heads/release/'):
         environment = 'testing'
-    elif ref == 'refs/heads/develop':
-        environment = 'development'
+    elif ref.startswith('refs/heads/guineapig/'):
+        environment = 'guineapig'
 
     if not environment:
         return

@@ -36,5 +36,5 @@ setup(
     author='Ernst Odolphi',
     install_requires=install_requires,
     dependency_links=dependency_links,
-    author_email='ernst@onepercentclub.com'
+    author_email='ernst@goodup.com'
 )
