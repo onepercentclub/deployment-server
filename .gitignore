@@ -1,0 +1,7 @@
+# Mac stuff and specific weirdness
+.DS\_Store
+
+# Misc stuff
+env
+.idea
+
