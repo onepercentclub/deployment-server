@@ -58,6 +58,7 @@ def make_celery(app):
 
     class ContextTask(TaskBase):
         abstract = True
+
         def __call__(self, *args, **kwargs):
             with app.app_context():
                 return TaskBase.__call__(self, *args, **kwargs)
@@ -91,7 +92,8 @@ def webhook():
         signature = request.headers['X-Hub-Signature']
         payload = request.json
 
-        mac = hmac.new(app.config['GITHUB_WEBHOOK_SECRET'], msg=request.data, digestmod=hashlib.sha1)
+        mac = hmac.new(app.config['GITHUB_WEBHOOK_SECRET'],
+                       msg=request.data, digestmod=hashlib.sha1)
         if not 'sha1={}'.format(mac.hexdigest()) == signature:
             return 'Invalid signature', 403
 
@@ -157,13 +159,18 @@ def deploy(payload):
         args = (
             "jira_email={jira_email} jira_password={jira_password} jira_url={jira_url} "
             "jira_id={jira_id} git_username={git_username} git_password={git_password} "
-            "git_org={git_org} commit_hash={commit_hash}").format(
-                commit_hash=payload['deployment']['sha'], **app.config['JIRIT']
-            )
+            "git_org={git_org}").format(
+            **app.config['JIRIT']
+        )
+
+        if environment != 'staging':
+            args += " commit_hash={commit_hash}".format(
+                commit_hash=payload['deployment']['sha'])
 
         result = ansible(
             '--vault-password-file=/dev/null/', '--skip-tags=vault',
-            '-i',  'hosts/linode', '-l', environment, '-vvv', '{}.yml'.format(target),
+            '-i',  'hosts/linode', '-l', environment, '-vvv', '{}.yml'.format(
+                target),
             '-e', args, _cwd=app.config['ANSIBLE_PATH']
         )
         print result, '!!!!'
@@ -193,7 +200,8 @@ def deploy(payload):
     )
     response = github.post(
         payload['deployment']['statuses_url'],
-        json.dumps({'state': state, 'description': description[-139:], 'target_url': target_url})
+        json.dumps(
+            {'state': state, 'description': description[-139:], 'target_url': target_url})
     )
     response.raise_for_status()
 
