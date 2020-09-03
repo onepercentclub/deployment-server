@@ -159,11 +159,11 @@ def deploy(payload):
         args = (
             "jira_email={jira_email} jira_password={jira_password} jira_url={jira_url} "
             "jira_id={jira_id} git_username={git_username} git_password={git_password} "
-            "git_org={git_org}").format(
+            "git_org={git_org} auto_confirm=true").format(
             **app.config['JIRIT']
         )
 
-        if environment != 'staging':
+        if environment != 'staging' or target != 'site_backend':
             args += " commit_hash={commit_hash}".format(
                 commit_hash=payload['deployment']['sha'])
 
