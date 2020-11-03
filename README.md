@@ -12,16 +12,16 @@ Deploy things
 Installation / Usage
 --------------------
 
-To install use pip:
+Clone the repo:
 
-    $ pip install deployment_server
-
-
-Or clone the repo:
-
-    $ git clone https://github.com/eodolphi/deployment_server.git
+    $ git clone https://github.com/onepercentclub/deployment_server
+    $ cd deployment_server
     $ python setup.py install
-    
+
+Or to install using pip after cloning:
+
+    $ pip install .
+
 Contributing
 ------------
 
