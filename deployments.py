@@ -8,7 +8,6 @@ import subprocess
 
 from celery import Celery
 from flask import Flask, request, url_for
-from flask_redis import FlaskRedis
 import sh
 import requests
 
@@ -18,11 +17,9 @@ app.config['GITHUB_WEBHOOK_SECRET'] = os.environ['GITHUB_WEBHOOK_SECRET']
 app.config['GITHUB_ACCESS_TOKEN'] = os.environ['GITHUB_ACCESS_TOKEN']
 app.config['ANSIBLE_PATH'] = os.environ['ANSIBLE_PATH']
 app.config['REPOS'] = {
-    'eodolphi/test-repo': 'site_frontend',
     'onepercentclub/reef': 'site_frontend',
     'onepercentclub/bluebottle': 'site_backend'
 }
-app.config['REDIS_URL'] = os.environ['REDIS_URL']
 app.config['CELERY_BROKER_URL'] = os.environ['REDIS_URL']
 app.config['CELERY_RESULT_BACKEND'] = os.environ['REDIS_URL']
 app.config['SERVER_NAME'] = 'deployments.dokku.onepercentclub.com'
@@ -35,7 +32,6 @@ app.config['JIRIT'] = {
     'git_password': os.environ['GIT_PASSWORD'],
     'git_org': os.environ['GIT_ORG'],
 }
-redis_store = FlaskRedis(app)
 
 
 git = sh.git
@@ -69,22 +65,6 @@ def make_celery(app):
 celery = make_celery(app)
 
 
-@app.route('/deployment/<user>/<repo>/<id>')
-def deployment(user, repo, id):
-    response = github.get(
-        'https://api.github.com/repos/{user}/{repo}/deployments/{id}/statuses'.format(
-            user=user, repo=repo, id=id
-        )
-    )
-
-    return redis_store.get(
-        'deployment-{}/{}-{}'.format(
-            user, repo, id
-        )
-    )
-    return response.content, 200
-
-
 @app.route('/webhook/', methods=['GET', 'POST'])
 def webhook():
     if request.method == 'POST':
@@ -113,11 +93,13 @@ def create_deployment(payload):
 
     environment = None
     if ref == 'refs/heads/master':
-        environment = 'staging'
+        environment = 's.goodup.com'
     elif ref.startswith('refs/heads/release/'):
-        environment = 'testing'
-    elif ref.startswith('refs/heads/guineapig/'):
-        environment = 'guineapig'
+        environment = 't.goodup.com'
+    elif ref.startswith('refs/heads/release-2/'):
+        environment = 't2.goodup.com'
+    elif ref.startswith('refs/heads/release-3/'):
+        environment = 't3.goodup.com'
 
     if not environment:
         return
@@ -169,7 +151,7 @@ def deploy(payload):
 
         result = ansible(
             '--vault-password-file=/dev/null/', '--skip-tags=vault',
-            '-i',  'hosts/linode', '-l', environment, '-vvv', '{}.yml'.format(
+            '-i',  'hosts/hosts.yml', '-l', environment, '-vvv', '{}.yml'.format(
                 target),
             '-e', args, _cwd=app.config['ANSIBLE_PATH']
         )
@@ -182,14 +164,6 @@ def deploy(payload):
         description = 'Deploy failed'
         state = 'error'
         log = str(e.stdout)
-
-    redis_store.set(
-        'deployment-{}-{}'.format(
-            payload['repository']['full_name'],
-            payload['deployment']['id']
-        ),
-        str(log)
-    )
 
     target_url = url_for(
         'deployment',
