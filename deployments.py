@@ -149,7 +149,7 @@ def deploy(payload):
 
         result = ansible(
             '--vault-password-file=/dev/null/', '--skip-tags=vault',
-            '-i',  'hosts/hosts.yml', '-l', environment, '-vvv', '{}.yml'.format(
+            '-i',  'hosts/linode', '-l', environment, '-vvv', '{}.yml'.format(
                 target),
             '-e', args, _cwd=app.config['ANSIBLE_PATH']
         )
