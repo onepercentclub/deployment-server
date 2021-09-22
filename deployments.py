@@ -93,13 +93,11 @@ def create_deployment(payload):
 
     environment = None
     if ref == 'refs/heads/master':
-        environment = 's.goodup.com'
+        environment = 'staging'
     elif ref.startswith('refs/heads/release/'):
-        environment = 't.goodup.com'
-    elif ref.startswith('refs/heads/release-2/'):
-        environment = 't2.goodup.com'
-    elif ref.startswith('refs/heads/release-3/'):
-        environment = 't3.goodup.com'
+        environment = 'testing'
+    elif ref.startswith('refs/heads/demo/'):
+        environment = 'guineapig'
 
     if not environment:
         return
