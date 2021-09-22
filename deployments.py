@@ -165,17 +165,10 @@ def deploy(payload):
         state = 'error'
         log = str(e.stdout)
 
-    target_url = url_for(
-        'deployment',
-        user=payload['repository']['full_name'].split('/')[0],
-        repo=payload['repository']['name'],
-        id=payload['deployment']['id'],
-        _external=True
-    )
     response = github.post(
         payload['deployment']['statuses_url'],
         json.dumps(
-            {'state': state, 'description': description[-139:], 'target_url': target_url})
+            {'state': state, 'description': description[-139:]})
     )
     response.raise_for_status()
 
