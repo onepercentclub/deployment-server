@@ -155,7 +155,7 @@ def deploy(payload):
                 target),
             '-e', args, _cwd=app.config['ANSIBLE_PATH']
         )
-        print result, '!!!!'
+        print result, args, '!!!!'
 
         description = 'Deployment succeeded'
         log = str(result.stdout)
