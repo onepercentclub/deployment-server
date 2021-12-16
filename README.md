@@ -25,7 +25,7 @@ Or clone the repo:
 Contributing
 ------------
 
-TBD
+TBD :-(
 
 Example
 -------
