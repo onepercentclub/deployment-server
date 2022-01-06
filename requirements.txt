@@ -5,4 +5,4 @@ requests==2.13.0
 sh==1.12.10
 gunicorn==19.7.0
 ansible==2.2.1
-celery==4.0.2
+celery==5.2.2
