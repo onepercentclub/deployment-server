@@ -148,7 +148,7 @@ def deploy(payload):
                 commit_hash=payload['deployment']['sha'])
 
         result = ansible(
-            '--vault-password-file=/dev/null/', '--skip-tags=vault',
+            '--skip-tags=vault',
             '-i',  'hosts/linode', '-l', environment, '-vvv', '{}.yml'.format(
                 target),
             '-e', args, _cwd=app.config['ANSIBLE_PATH']
