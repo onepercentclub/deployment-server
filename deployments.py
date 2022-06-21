@@ -59,7 +59,7 @@ def webhook():
         return '', 201
 
 
-@celery.task()
+@client.task()
 def create_deployment(payload):
     ref = payload['ref']
 
