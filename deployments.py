@@ -119,8 +119,8 @@ def deploy(payload):
     try:
         git_result = git.pull(_cwd=app.config['ANSIBLE_PATH'])
         args = (
-            "git_username={git_username} git_password={git_password} "
-            "git_org={git_org} auto_confirm=true").format(
+            "git_username={GIT_USERNAME} git_password={GIT_PASSWORD} "
+            "git_org={GIT_ORG} auto_confirm=true").format(
             **app.config
         )
 
