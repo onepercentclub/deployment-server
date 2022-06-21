@@ -25,7 +25,6 @@ app.config['REPOS'] = {
 }
 
 git = sh.git
-app.config['SLACK_WEBHOOK'] = os.environ['SLACK_WEBHOOK']
 
 github = requests.Session()
 github.headers.update({
