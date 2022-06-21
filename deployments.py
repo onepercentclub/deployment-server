@@ -89,7 +89,7 @@ def create_deployment(payload):
     response.raise_for_status()
 
 
-@celery.task()
+@client.task()
 def deploy(payload):
     state = 'success'
     response = github.post(
@@ -141,7 +141,7 @@ def deploy(payload):
     response.raise_for_status()
 
 
-@celery.task()
+@client.task()
 def send_slack_message(payload):
     state = payload['deployment_status']['state']
     description = payload['deployment_status']['description']
