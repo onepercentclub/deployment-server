@@ -25,7 +25,6 @@ app.config['REPOS'] = {
 }
 
 git = sh.git
-ansible = getattr(sh, 'ansible-playbook')
 app.config['SLACK_WEBHOOK'] = os.environ['SLACK_WEBHOOK']
 
 github = requests.Session()
@@ -136,7 +135,7 @@ def deploy(payload):
                 commit_hash=payload['deployment']['sha']
             )
 
-        result = ansible(
+        result = getattr(sh, './ansible-playbook')(
             '--skip-tags=vault',
             '-i',  'hosts/linode', '-l', environment, '-vvv', '{}.yml'.format(
                 target
