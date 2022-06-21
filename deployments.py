@@ -143,6 +143,7 @@ def deploy(payload):
         description = 'Deploy failed'
         state = 'error'
         log = str(e.stdout)
+        print(log)
 
     response = github.post(
         payload['deployment']['statuses_url'],
