@@ -33,8 +33,19 @@ github.headers.update({
 })
 
 
-client = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
-client.conf.update(app.config)
+def make_celery(app):
+    celery = Celery(app.import_name)
+    celery.conf.update(app.config["CELERY_CONFIG"])
+
+    class ContextTask(celery.Task):
+        def __call__(self, *args, **kwargs):
+            with app.app_context():
+                return self.run(*args, **kwargs)
+
+    celery.Task = ContextTask
+    return celery
+
+celery = make_celery(app)
 
 
 @app.route('/webhook/', methods=['GET', 'POST'])
@@ -59,7 +70,7 @@ def webhook():
         return '', 201
 
 
-@client.task()
+@celery.task()
 def create_deployment(payload):
     ref = payload['ref']
 
@@ -89,7 +100,7 @@ def create_deployment(payload):
     response.raise_for_status()
 
 
-@client.task()
+@celery.task()
 def deploy(payload):
     state = 'success'
     response = github.post(
@@ -141,7 +152,7 @@ def deploy(payload):
     response.raise_for_status()
 
 
-@client.task()
+@celery.task()
 def send_slack_message(payload):
     state = payload['deployment_status']['state']
     description = payload['deployment_status']['description']
