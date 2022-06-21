@@ -129,7 +129,7 @@ def deploy(payload):
                 commit_hash=payload['deployment']['sha']
             )
 
-        result = getattr(sh, './ansible-playbook')(
+        result = getattr(sh, 'env/bin/ansible-playbook')(
             '--skip-tags=vault',
             '-i',  'hosts/linode', '-l', environment, '-vvv', '{}.yml'.format(
                 target
