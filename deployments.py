@@ -13,30 +13,20 @@ import requests
 
 
 app = Flask('deployment_server')
-app.config['GITHUB_WEBHOOK_SECRET'] = os.environ['GITHUB_WEBHOOK_SECRET']
-app.config['GITHUB_ACCESS_TOKEN'] = os.environ['GITHUB_ACCESS_TOKEN']
-app.config['ANSIBLE_PATH'] = os.environ['ANSIBLE_PATH']
+try:
+    import config
+    app.config.update(vars(config))
+except ModuleNotFoundError: 
+    pass
+
 app.config['REPOS'] = {
     'onepercentclub/reef': 'site_frontend',
     'onepercentclub/bluebottle': 'site_backend'
 }
-app.config['CELERY_BROKER_URL'] = os.environ['REDIS_URL']
-app.config['CELERY_RESULT_BACKEND'] = os.environ['REDIS_URL']
-app.config['SERVER_NAME'] = 'deployments.dokku.onepercentclub.com'
-app.config['JIRIT'] = {
-    'jira_email': os.environ['JIRA_EMAIL'],
-    'jira_password': os.environ['JIRA_PASSWORD'],
-    'jira_url': os.environ['JIRA_URL'],
-    'jira_id': os.environ['JIRA_ID'],
-    'git_username': os.environ['GIT_USERNAME'],
-    'git_password': os.environ['GIT_PASSWORD'],
-    'git_org': os.environ['GIT_ORG'],
-}
-
 
 git = sh.git
 ansible = getattr(sh, 'ansible-playbook')
-slack_webhook = os.environ['SLACK_WEBHOOK']
+app.config['SLACK_WEBHOOK'] = os.environ['SLACK_WEBHOOK']
 
 github = requests.Session()
 github.headers.update({
@@ -114,7 +104,6 @@ def create_deployment(payload):
         json.dumps(deployment)
     )
 
-    print response.content
     response.raise_for_status()
 
 
@@ -137,28 +126,27 @@ def deploy(payload):
     try:
         git_result = git.pull(_cwd=app.config['ANSIBLE_PATH'])
         args = (
-            "jira_email={jira_email} jira_password={jira_password} jira_url={jira_url} "
-            "jira_id={jira_id} git_username={git_username} git_password={git_password} "
+            "git_username={git_username} git_password={git_password} "
             "git_org={git_org} auto_confirm=true").format(
-            **app.config['JIRIT']
+            **app.config
         )
 
         if environment != 'staging' or target != 'site_backend':
             args += " commit_hash={commit_hash}".format(
-                commit_hash=payload['deployment']['sha'])
+                commit_hash=payload['deployment']['sha']
+            )
 
         result = ansible(
             '--skip-tags=vault',
             '-i',  'hosts/linode', '-l', environment, '-vvv', '{}.yml'.format(
-                target),
+                target
+            ),
             '-e', args, _cwd=app.config['ANSIBLE_PATH']
         )
-        print result, args, target, environment, '!!!!'
 
         description = 'Deployment succeeded'
         log = str(result.stdout)
     except sh.ErrorReturnCode as e:
-        print e, e.stdout
         description = 'Deploy failed'
         state = 'error'
         log = str(e.stdout)
@@ -203,7 +191,7 @@ def send_slack_message(payload):
     }
 
     response = requests.post(
-        slack_webhook,
+        app.configp['SLACK_WEBHOOK'],
         json.dumps(data),
         headers={'Content-Type': 'application/json'}
     )
