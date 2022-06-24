@@ -109,6 +109,7 @@ def update_deployment_status(state, payload):
             'description': payload['deployment']['description']
         })
     )
+    print(response.text)
     response.raise_for_status()
 
 @celery.task()
