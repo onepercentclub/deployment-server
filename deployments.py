@@ -100,17 +100,21 @@ def create_deployment(payload):
     response.raise_for_status()
 
 
-@celery.task()
-def deploy(payload):
-    state = 'success'
+def update_deployment_status(state, payload):
     response = github.post(
         payload['deployment']['statuses_url'],
         json.dumps({
-            'state': 'pending',
-            'description': 'Started deploy'
+            'state': state,
+            'environment': payload['deployment']['original_environment'],
+            'description': payload['deployment']['description']
         })
     )
     response.raise_for_status()
+
+@celery.task()
+def deploy(payload):
+    state = 'success'
+    update_deployment_status('pending', payload)
 
     environment = payload['deployment']['environment']
     os.chdir(app.config['ANSIBLE_PATH'])
@@ -145,49 +149,4 @@ def deploy(payload):
         log = str(e.stdout)
         print(log)
 
-    response = github.post(
-        payload['deployment']['statuses_url'],
-        json.dumps(
-            {'state': state, 'description': description[-139:]})
-    )
-    response.raise_for_status()
-
-
-@celery.task()
-def send_slack_message(payload):
-    state = payload['deployment_status']['state']
-    description = payload['deployment_status']['description']
-    environment = payload['deployment']['environment']
-    deployment = payload['deployment']['description']
-
-    color_map = {
-        'pending': 'warning',
-        'error': 'danger',
-        'success': 'good'
-    }
-
-    color = color_map[state]
-
-    data = {
-        'channel': '#test-deploys',
-        'attachments': [{
-            "title": 'Deploying {} to {}'.format(deployment, environment),
-            "text": description,
-            "color": color,
-            "title_link": url_for(
-                'deployment',
-                user=payload['repository']['full_name'].split('/')[0],
-                repo=payload['repository']['name'],
-                id=payload['deployment']['id'],
-                _external=True
-            )
-        }]
-    }
-
-    response = requests.post(
-        app.configp['SLACK_WEBHOOK'],
-        json.dumps(data),
-        headers={'Content-Type': 'application/json'}
-    )
-
-    response.raise_for_status()
+    update_deployment_status(state, payload)
