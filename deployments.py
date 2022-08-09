@@ -80,7 +80,7 @@ def create_deployment(payload):
     elif ref.startswith('refs/heads/release/'):
         environment = 'testing'
     elif ref.startswith('refs/heads/demo/'):
-        environment = 'guineapig'
+        environment = 'demo'
 
     if not environment:
         return
