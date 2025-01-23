@@ -16,11 +16,10 @@ app = Flask('deployment_server')
 try:
     import config
     app.config.update(vars(config))
-except ModuleNotFoundError: 
+except ModuleNotFoundError:
     pass
 
 app.config['REPOS'] = {
-    'onepercentclub/reef': 'site_frontend',
     'onepercentclub/bluebottle': 'site_backend'
 }
 
@@ -79,6 +78,8 @@ def create_deployment(payload):
         environment = 'staging'
     elif ref.startswith('refs/heads/release/'):
         environment = 'testing'
+    elif ref.startswith('refs/heads/release/'):
+        environment = 'testing-2'
     elif ref.startswith('refs/heads/demo/'):
         environment = 'demo'
 
